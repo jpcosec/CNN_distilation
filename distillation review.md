@@ -34,11 +34,9 @@ Division de formas de compresion:
 ### Like What You Like: Knowledge Distill via Neuron Selectivity Transfer Zehao
 Año: DEC 2017
 
-Type: theoretical, aplication
+Applicacion: Imágenes
 
-Application: Object detection
-
-kw: Knowledge distillation, Knowledge Transfer, features
+tipo: layer level distillation, CNN
 
 
 
@@ -74,11 +72,9 @@ $$ \mathcal{L}_{MDD^2}(S_p,S_q)= \mid \mid \frac{1}{N^2} \sum^N_{i=1}\sum^N_{i'=
 ### FITNETS: HINTS FOR THIN DEEP NETS
 Año: MAR 2015 
 
-Type: theoretical
+Typo: Layer level distillation, CNN,
 
-Application: 
-
-kw: Knowledge distillation, Knowledge Transfer
+Aplicacion: Imágenes
 
 Abstract: While depth tends to improve network performances, it also makes gradient-based training more difficult since deeper networks tend to be more non-linear. The re- cently proposed knowledge distillation approach is aimed at obtaining small and fast-to-execute models, and it has shown that a student network could imitate the soft output of a larger teacher network or ensemble of networks. In this paper, we extend this idea to allow the training of a student that is deeper and thinner than the teacher, using not only the outputs but also the intermediate represen- tations learned by the teacher as hints to improve the training process and final performance of the student. Because the student intermediate hidden layer will generally be smaller than the teacher’s intermediate hidden layer, additional pa- rameters are introduced to map the student hidden layer to the prediction of the teacher hidden layer. This allows one to train deeper students that can generalize better or run faster, a trade-off that is controlled by the chosen student capacity. For example, on CIFAR-10, a deep student network with almost 10.4 times less parameters outperforms a larger, state-of-the-art teacher network.
 
@@ -99,11 +95,9 @@ $$ \mathcal{L}_{NST}(WS) =\mathcal{L}_{ce}(Y_{true},ps)+\lambda \mathcal{L}_{HT}
 
 Año: Dec. 2016
 
-Type: theoretical
+Tipo: Layer level distillation, CNN,
 
-Application: 
-
-kw: Knowledge distillation, Knowledge Transfer
+Applicacion: Imágenes
 
 Abstract: Attention plays a critical role in human visual experience. Furthermore, it has recently been demonstrated that attention can also play an important role in the
 Attention plays a critical role in human visual experience. Furthermore, it has recently been demonstrated that attention can also play an important role in the context of applying artificial neural networks to a variety of tasks from fields such
@@ -143,11 +137,50 @@ Para el caso de gradiente, se asume que el gradiente de la perdida de clasificac
 
 $$ J_i =\frac{\partial \mathcal{L}_{ce}(W_i,x)}{\partial x}$$
 
-La perdida toma la siguiente forma.
+La perdida toma la siguiente forma, la cual puede ser dificil para analizarse analiticamente ya que implica realizar backpropagation dos veces pero con las tecnicas modernas de diferenciacion automatica no deberia ser problema.
 
 $$ \mathcal{L}_{NST}(WS) =\mathcal{L}_{ce}(Y_{true},ps)+\frac{\lambda}{2} \left \| J_s - J_T \right \|_2 $$
 
-Donde
+- En general ambos metodos funcionan bien
+
+### Accelerating Convolutional Neural Networks with Dominant Convolutional Kernel and Knowledge Pre-regression
+
+Año: 2016 
+
+Tipo: Layer level, model compression
+
+Aplicacion: imagenes
+
+Abstract: Aiming at accelerating the test time of deep convolutional neural networks (CNNs), we propose a model compression method that contains a novel dominant kernel (DK) and a new training method called knowledge pre-regression (KP). In the combined model DK2PNet, DK is presented to significantly accomplish a low-rank decomposition of convolutional kernels, while KP is employed to transfer knowledge of intermediate hidden layers from a larger teacher network to its compressed student network on the basis of a cross entropy loss function instead of previous Euclidean distance. Compared to the latest results, the experimental results achieved on CIFAR-10, CIFAR-100, MNIST, and SVHN benchmarks show that our DK2PNet method has the best performance in the light of being close to the state of the art accuracy and requiring dramatically fewer number of model parameters.
+
+- Inentendible, intentan definir una arquitectura convolucional que decompone la convolucion y entrenar una red estudiante sobre eso pero no se entiende la primera parte.
 
 
 
+### FEED: FEATURE-LEVEL ENSEMBLE EFFECT FOR KNOWLEDGE DISTILLATION
+
+Año: 2019
+
+Tipo: Layer level distillation
+
+Aplicacion
+
+Abstract: This paper proposes a versatile and powerful training algorithm named Feature- level Ensemble Effect for knowledge Distillation (FEED), which is inspired by the work of factor transfer. The factor transfer is one of the knowledge transfer methods that improves the performance of a student network with a strong teacher network. It transfers the knowledge of a teacher in the feature map level using high-capacity teacher network, and our training algorithm FEED is an extension of it. FEED aims to transfer ensemble knowledge, using either multiple teacher in parallel or multiple training sequences. Adapting peer-teaching framework, we introduce a couple of training algorithms that transfer ensemble knowledge to the student at the feature map level, both of which help the student network find more generalized solutions in the parameter space. Experimental results on CIFAR-100 and ImageNet show that our method, FEED, has clear performance enhancements, without introducing any additional parameters or computations at test time.
+
+
+
+## Otras aplicaciones
+
+### KNOWLEDGE DISTILLATION FOR SMALL-FOOTPRINT HIGHWAY NETWORKS
+
+Año: 2016
+
+Tipo: Layer level distillation
+
+Aplicacion: Audio
+
+Abstract: Deep learning has significantly advanced state-of-the-art of speech recognition in the past few years. However, compared to conven- tional Gaussian mixture acoustic models, neural network models are usually much larger, and are therefore not very deployable in embed- ded devices. Previously, we investigated a compact highway deep neural network (HDNN) for acoustic modelling, which is a type of depth-gated feedforward neural network. We have shown that HDNN-based acoustic models can achieve comparable recognition accuracy with much smaller number of model parameters compared to plain deep neural network (DNN) acoustic models. In this pa- per, we push the boundary further by leveraging on the knowledge distillation technique that is also known as teacher-student training, i.e., we train the compact HDNN model with the supervision of a high accuracy cumbersome model. Furthermore, we also investigate sequence training and adaptation in the context of teacher-student training. Our experiments were performed on the AMI meeting speech recognition corpus. With this technique, we significantly im- proved the recognition accuracy of the HDNN acoustic model with less than 0.8 million parameters, and narrowed the gap between this model
+
+
+
+- Aplican destilacion para un modelo compacto de neuronas parecido a LSTM.
