@@ -177,8 +177,17 @@ Aplicacion:
 
 Abstract: Many researchers have sought ways of model compression to reduce the size of a deep neural network (DNN) with minimal performance degradation in order to use DNNs in embedded systems. Among the model compression methods, a method called knowledge transfer is to train a student network with a stronger teacher network. In this paper, we propose a novel knowledge transfer method which uses convolutional operations to paraphrase teacher’s knowledge and to translate it for the student. This is done by two convolutional modules, which are called a paraphraser and a translator. The paraphraser is trained in an unsupervised manner to extract the teacher factors which are defined as paraphrased information of the teacher network. The translator located at the student network extracts the student factors and helps to translate the teacher factors by mimicking them. We observed that our student network trained with the proposed factor transfer method outperforms the ones trained with conventional knowledge transfer methods.
 
-- Destila a nivel de features, pero proponiendo el uso de  capas intermedias en un "autoencoder fashion" que sirva de "interprete" entre el conocimiento de la red tutora y la estudiante, de manera similar al regresor de fitsnets solo que con una mayor cantidad de abstraccion entre medio, le pone de nombre "factors".  
-- 
+- Destila a nivel de features, pero proponiendo el uso de  capas intermedias en un "autoencoder fashion" que sirva de "interprete" entre el conocimiento de la red tutora y la estudiante, de manera similar al regresor de fitsnets solo que con una mayor cantidad de abstraccion entre medio, le pone de nombre "factores".  
+
+- El traspaso de informacion se realiza en 2 niveles, primero se entrena un parafreasador desde la red tutora, reconstruyendo el input desde la capa desde la cual se quiere realizar el traspaso de informacion. Se minimiza entonces la siguiente perdida en esta etapa, $P(x)$.
+
+  $$\mathcal{L}_{rec}=\left \| x - P(x) \right \| ^2$$
+
+- Luego de entrenado el parafraseador, se entrena la red estudiante ubicando una capa de interfaz que sirve de traductor entre el factor (salida del parafraseador) y la salida de la red estudiante. Luego, se usa la misma funcion de perdida de attention transfer entre las salidas del traductor y el parafraseador, a lo cual se suma la perdida de cross entropy para la salida.
+
+- Funciona regularmente bien, no demasiado, si regularmente
+
+
 
 ## malitos de layer level
 
