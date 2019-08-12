@@ -13,8 +13,8 @@ Division de formas de compresion:
 ## Notaciones
 
 - Red tutora $T$, red estudiante (todo: buscar un mejor termino) $S$
-- Feature map de una capa $F \in R^{C \times WH}$. 
-- De un canal $F^{k\cdot} \in R^{WH}$, de una posicion $F^{\cdot k} \in R^{C}$. 
+- Feature map o salida de una capa $F \in \mathcal{R}^{C \times WH}$, se considerará el valor despues de la activación (no linealidad $\sigma(.)$). 
+- De un canal $F^{k\cdot} \in \mathcal{R}^{WH}$, de una posicion $F^{\cdot k} \in \mathcal{R}^{C}$. 
 
 # Papers Base
 
@@ -51,7 +51,7 @@ Abstract: In this paper, we propose a novel knowledge transfer method by treatin
 
 - NST: se usan dos perdidas distintas, una para los feature maps y otra para la clasificacion. Clasificacion se pena con cross entropy y feature maps con MMD. 
 
-  $$ \mathcal{L}_{NST}(WS) =\mathcal{H}(Y_{true},ps)+\frac{\lambda}{2} \mathcal{L}_{MDD^2}(F_T, F_S) $$
+  $$ \mathcal{L}_{NST}(WS) =\mathcal{L}_{ce}(Y_{true},ps)+\frac{\lambda}{2} \mathcal{L}_{MDD^2}(F_T, F_S) $$
 
 - MMD: se tomó prestado desde domain adaptation.
 
@@ -88,6 +88,8 @@ Abstract: While depth tends to improve network performances, it also makes gradi
 
 $$ \mathcal{L}_{HT}=\frac{1}{2}\mid \mid F_T-r(F_s) \mid \mid^2$$
 
+$$ \mathcal{L}_{NST}(WS) =\mathcal{L}_{ce}(Y_{true},ps)+\lambda \mathcal{L}_{HT}(F_T, F_S) $$
+
 - Dado que un r fully connected aumenta de manera drastica la cantidad de parametros necesarios para el caso convoucional, se usa un $r$ convolucional
 
 - Primero preentrena la red usando solo el regresor y luego se entrena completa.
@@ -112,5 +114,40 @@ formation in order to significantly improve the performance of a student CNN net
 ing consistent improvement across a variety of datasets and convolutional neu- ral network architectures. Code and models for our experiments are available at https://github.com/szagoruyko/attention-transfer.
 
 - Se toma prestado el concepto de atencion desde la percepcion humana. Se distinguen 2 tripos de procesos de percepcion; atencionales y no atencionales. Los primeros permiten observar generalidades de una escena y recolectar informacion de alto nivel. Desde este proceso se logra navegar en ceirtos detalles de una escena.
+
 - En el contexto de CNNs, se considera la atencion como mapas espaciales que permiten codificar donde enfocar mas el procesamiento. Estos mapas se pueden definir con respecto a varias capas de la red y segun en que se basen se dividen en 2 tipos, de activacion y de gradiente.
-- Se realiza un estudio sobre como los mapas de atencion varían segun arquitecturas y como estos mapas pueden ser transferidos a redes estudiantes desde una red tutora ya entrenada.
+
+- Se realiza un estudio sobre como los mapas de atencion varían segun arquitecturas y como estos mapas pueden ser transferidos a redes estudiantes desde una red tutora ya entrenada. Se centraron en arquitecturas fully convolutional (redes donde la clasificacion o regresion final se realiza sin el uso de capas densas, si no aprovechando la reduccion dimensional que dan las convoluciones). 
+
+  
+
+- ** Mapa de atencion basado en activaciones**
+
+  Considerando una capa de una red y su activación $F_{T}$ se define una funcion de mapeo de activacion $ \mathcal{F}: \mathcal{R}^{C \times H \times W} \rightarrow \mathcal{R}^{ H \times W}$. Asumiendo que para una neurona particular, el valor absoluto de su activacion puede ser tomado como una medida de la importancia que da la red a un determinado input, para obtener con respecto a una posicion $h,w$ se pueden usar alguno de los siguientes estadisticos.
+
+  1. Suma de los absolutos entre los $C$ canales: $\mathcal{F}_{sum}(A)=\sum_{i=1}^C \mid A_i \mid$
+  2. Suma de potencias: $\mathcal{F}^p_{sum}(A)=\sum_{i=1}^C \mid A_i \mid ^p$
+  3. Maximo de potencias: $\mathcal{F}^p_{max}(A)=\max _{i=1,c} \mid A_i \mid ^p$
+
+  En general se nota que las redes de mejor accuracy suelen tener atencion mas marcada, y que las capas iniciales se "fijan" en detalles como ojos o narices mientras que las mas profundas se fijan en objetos de mayor nivel como caras. 
+
+  La perdida de entrenamiento en este caso es la siguiente, donde $\frac{Q_i^j}{\left \| Q_i^j \right \|}_2 $ es simplemente una normalizacion de las activaciones :
+
+  $$ \mathcal{L}_{NST}(WS) =\mathcal{L}_{ce}(Y_{true},ps)+\frac{\lambda}{2} \mathcal{L}_{at}(F_T, F_S) $$
+
+  Donde $\mathcal{L}_{at}(F_T, F_S)=  \sum_{j \in \mathcal{C}} \left \|  \frac{Q_S^j}{\left \| Q_S^j \right \|}_2 + \frac{Q_T^j}{\left \| Q_T^j \right \|}_2 \right \|_p$
+
+- ** Mapa de atencion basado en gradiente**
+
+Para el caso de gradiente, se asume que el gradiente de la perdida de clasificacion con respecto a una entrada permite medir la "sensibilidad" de la red ante el estimulo, para esto se define el gradiente como.
+
+$$ J_i =\frac{\partial \mathcal{L}_{ce}(W_i,x)}{\partial x}$$
+
+La perdida toma la siguiente forma.
+
+$$ \mathcal{L}_{NST}(WS) =\mathcal{L}_{ce}(Y_{true},ps)+\frac{\lambda}{2} \left \| J_s - J_T \right \|_2 $$
+
+Donde
+
+
+
