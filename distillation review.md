@@ -187,7 +187,37 @@ Abstract: Many researchers have sought ways of model compression to reduce the s
 
 - Funciona regularmente bien, no demasiado, si regularmente
 
+### Layer-Level Knowledge Distillation for Deep Neural Network Learning
+año: abril 2019
 
+tipo: Layer level distillation
+
+aplicacion:
+
+abstract: Motivated by the recently developed distillation approaches that aim to obtain small and fast-to-execute models, in this paper a novel Layer Selectivity Learning (LSL) framework is proposed for learning deep models. We firstly use an asymmetric dual-model learning framework, called Auxiliary Structure Learning (ASL), to train a small model with the help of a larger and well-trained model. Then, the intermediate layer selection scheme, called the Layer Selectivity Procedure (LSP), is exploited to determine the corresponding intermediate layers of source and target models. The LSP is achieved by two novel matrices, the layered inter-class Gram matrix and the inter-layered Gram matrix, to evaluate the diversity and discrimination of feature maps. The experimental results, demonstrated using three publicly available datasets, present the superior performance of model training using the LSL deep model learning framework.
+
+- Usa modelos y frameworks demasiado viejos para ser de 2019.
+- todo: profundizar en matriz de gram
+
+### A Gift from Knowledge Distillation: Fast Optimization, Network Minimization and Transfer Learning
+
+Año: 2017
+
+tipo: layer level distillation
+
+aplicacion
+
+abstract: We introduce a novel technique for knowledge transfer, where knowledge from a pretrained deep neural network (DNN) is distilled and transferred to another DNN. As the DNN maps from the input space to the output space through many layers sequentially, we define the distilled knowledge to be transferred in terms of flow between layers, which is calculated by computing the inner product between features from two layers. When we compare the student DNN and the original network with the same size as the student DNN but trained without a teacher network, the proposed method of transferring the distilled knowledge as the flow between two layers exhibits three important phenomena: (1) the student DNN that learns the distilled knowledge is optimized much faster than the original model; (2) the student DNN outper- forms the original DNN; and (3) the student DNNcan learn the distilled knowledge from a teacher DNN that is trained at a different task, and the student DNN outperforms the original DNN that is trained from scratch.
+
+- 
+
+
+
+### A Survey on Deep Transfer Learning
+
+año: agosto 2018
+
+tipo: survey
 
 ## malitos de layer level
 
