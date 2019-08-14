@@ -214,15 +214,36 @@ abstract: We introduce a novel technique for knowledge transfer, where knowledge
 
 $$G_{i,j}(x,W)= \sum_{s=1}^h \sum_{t=1}^w\frac{ F^1_{s,t,i}(x,W)  F^2_{s,t,i}(x,W)}{h \times w}$$
 
-- Nótese que la formula se define para capas sin perdida dimensional, como es el caso de las capas en los bloques res-net. 
+- Nótese que la formula se define para capas sin perdida dimensional, como es el caso de las capas en los bloques res-net. De tal forma la perdida se define como la distancia $L_2$ entre las FSPs de ambas redes, donde se deja libre un parametro $\lambda_i$ sobre las n posiciones de las matrices para poder ponderar entre redes. En el caso expuesto este lambda se deja libre.
 
+  $$\mathcal{L}_{FSP} = \frac{1}{N} \sum_x \sum_{i=1}^n \lambda_i \left \| G_i^T(x;W_T)-G_i^S(x;W_S)  \right \|_2$$
 
+- Al momento del entrenamiento, el entrenamiento se divide en dos fases, inicializacion y entrenamiento sobre la tarea principal. La inicializacion se realiza seteando $W_S$ de tal forma que minimice $\mathcal{L}_{FSP}$ entre ambas redes, para seguidamente realizar un finetunning entrenando de manera regular contra los labels originales.
+- Funcionamiento regular, muy posiblemente por la manera de pos-entrenamiento (No hay destilacion al momento de destilar, solo en la inicializacion de los pesos).
+
+## Transfer Learning
 
 ### A Survey on Deep Transfer Learning
 
 año: agosto 2018
 
 tipo: survey
+
+Abstract. As a new classification platform, deep learning has recently received increasing attention from researchers and has been success- fully applied to many domains. In some domains, like bioinformatics and robotics, it is very difficult to construct a large-scale well-annotated dataset due to the expense of data acquisition and costly annotation, which limits its development. Transfer learning relaxes the hypothesis that the training data must be independent and identically distributed (i.i.d.) with the test data, which motivates us to use transfer learning to solve the problem of insufficient training data. This survey focuses on reviewing the current researches of transfer learning by using deep neural network and its applications. We defined deep transfer learning, category and review the recent research works based on the techniques used in deep transfer learning.
+
+- Hacen una introduccion a una definicion formal al problema del transfer learning en contexto de deep learning. Luego separan taxonómicamente en 4 clases las tendencias que estan pasando actualmente.
+
+- La definicion de transfer learning la analogan al aprovechamiento o adaptacion de un modelo entrenado en un par dominio-tarea particular a otro par dominio tarea.
+
+  Un dominio se puede definir como $\mathcal{D} = \{ \chi,P(X) \}$ es decir un par compuesto por $\chi$, el espacio de características y $P(X)$, una probabilidad de distribucion sobre $X=\{x_1,\dots,x_n \} \in \chi$. Tomando como ejemplo el popular dataset MNIST, $\chi$ podria tratarse de todos los arreglos $\mathcal{b}^{28 \times 28} $  donde $ \mathcal{b}=\{0 \dots 255\} $ son todos los enteros representables en 8 bits, $X$ las 70.000 imagenes del dataset y $P(X)$ todos los digitos manuscritos que puedan ser escritos en esa resolución.
+
+  Una tarea de aprendizaje (task) se puede definir como $\mathcal{T}=\{y,f(x)\}$, tambien consistente en dos partes, un espacio de etiquetas o clases $yh$ y una funcion objetivo $f(x)$, tambien describible como $P(y|x)$. Siguiendo el ejemplo de mnist, $y$ corresponde a los digitos del 0 al 9 y $f(x)$ a la prediccion de un modelo.
+
+  Dadas estas definiciones, transfer learning corresponde a que dado una tarea *source* $\mathcal{T}_{s}$ razonablemente resuelta sobre un dominio *source* $\mathcal{D}_s$ y una tarea *target* $\mathcal{T}_t$ sobre un dominio target $\mathcal{D}_t$ no resueltas y donde ambos o uno de $\mathcal{D}_s \neq \mathcal{D}_t$ y  $\mathcal{T}_s \neq \mathcal{T}_t$ se cumplen, se hace uso del conocimiento latente del par *source* para mejorar el desempeño del par target. En el caso que hayan estructuras deep metidas entre medios, se puede hablar de deep transfer learning.
+
+- La primera categoria descrita corresponde a habiendo cierta coincidencia entre los conjuntos $D_s$ y $D_t$, usar instancias ponderadas de estos para la prediccion objetivo, ejemplo de esto serían los algoritmos tipo ensemble. Otra se refiere al uso de parte de la red base que define $f_t(x)$ para extraer características que luego pueden clasificarse mediante un reentrenamiento de las capas no usadas o el uso de otros algoritmos. Finalmente quedan dos categorías, la primera referida al uso de funciones de mapeo entre uno y otro dominio para aprovechar el conocimiento de uno en otro y la segunda referida al uso de algoritmos adversariales para este  mismo fin.
+
+
 
 ## Malitos de layer level
 
