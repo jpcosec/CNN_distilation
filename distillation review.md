@@ -53,6 +53,30 @@ Factores que influyen a una mejor convergencia
 
 
 
+## Learning Global Additive Explanations for Neural Nets Using Model Distillation
+
+Año: dec 2018
+
+Aplicación : 
+
+Tipo: distillation, interpretabillity
+
+abstract: Interpretability has largely focused on local explanations, i.e. explaining why a model made a particular prediction for a sample. These explanations are appealing due to their simplicity and local fidelity. However, they do not provide information about the general behavior of the model. We propose to leverage model distilla- tion to learn global additive explanations that describe the relationship between input features and model predictions. These global explanations take the form of feature shapes, which are more expressive than feature attributions. Through care- ful experimentation, we show qualitatively and quantitatively that global additive explanations are able to describe model behavior and yield insights about models such as neural nets. A visualization of our approach applied to a neural net as it is trained is available at https://youtu.be/ErQYwNqzEdc.
+
+- Proponen usar destilacion para aprender explicaciones globales aditivas en la forma$$\hat{F}(x)=h_o + \sum_i h_i(xi) + \sum_{i \neq j} h_{i,j} (x_i,x_j) + \sum_{i\neq j}\sum_{j \neq k} h_{ijk} (x_i,x_j,x_k) + \cdots$$
+
+Este tipo de modelos suelen aproximarse 
+
+- Usan $\hat{F}$ para producir un modelo alternativo como un arbol de desiciones para predecir F
+
+
+
+# Video distillation
+
+### TKD: Temporal Knowledge Distillation for Active Perception
+
+
+
 # Layer/ feature level
 
 ### Like What You Like: Knowledge Distill via Neuron Selectivity Transfer Zehao
