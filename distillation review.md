@@ -209,7 +209,12 @@ aplicacion
 
 abstract: We introduce a novel technique for knowledge transfer, where knowledge from a pretrained deep neural network (DNN) is distilled and transferred to another DNN. As the DNN maps from the input space to the output space through many layers sequentially, we define the distilled knowledge to be transferred in terms of flow between layers, which is calculated by computing the inner product between features from two layers. When we compare the student DNN and the original network with the same size as the student DNN but trained without a teacher network, the proposed method of transferring the distilled knowledge as the flow between two layers exhibits three important phenomena: (1) the student DNN that learns the distilled knowledge is optimized much faster than the original model; (2) the student DNN outper- forms the original DNN; and (3) the student DNNcan learn the distilled knowledge from a teacher DNN that is trained at a different task, and the student DNN outperforms the original DNN that is trained from scratch.
 
-- 
+- Usan distiliacion para resolver tres tareas distintas pero complementarias; Optimizacion del entrenamiento de la red estudiante mediante inicializacion inteligente de los pesos, mejorar el performance en tiempo de la red estudiante dado su tamaño y mejorar el performace en accuracy dada la transferencia de conocimiento de la red.
+- En vez de destilar directamente las features de la red tutora, centran su problema en la destilacion del flujo del procedimiento de resolución (FSP *Flow of Solution Procedure*) de la red tutora, definida como la relacion entre dos features intermedios. Matematicamente hablando, definen este FSP entre dos capas como la matriz Gramiana entre los features de ambas. En el caso de dos capas $1$ y $2$, un input $x$ y pesos $W$, este valor sería:
+
+$$G_{i,j}(x,W)= \sum_{s=1}^h \sum_{t=1}^w\frac{ F^1_{s,t,i}(x,W)  F^2_{s,t,i}(x,W)}{h \times w}$$
+
+- Nótese que la formula se define para capas sin perdida dimensional, como es el caso de las capas en los bloques res-net. 
 
 
 
@@ -219,7 +224,7 @@ año: agosto 2018
 
 tipo: survey
 
-## malitos de layer level
+## Malitos de layer level
 
 ### Accelerating Convolutional Neural Networks with Dominant Convolutional Kernel and Knowledge Pre-regression
 
