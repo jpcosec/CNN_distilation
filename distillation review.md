@@ -77,6 +77,34 @@ Este tipo de modelos suelen aproximarse
 
 
 
+## Destilacion en imagenes
+
+### Object detection at 200 Frames Per Second Rakesh [Completar]
+
+año: mayo 2019
+
+tipo: Model distillation, yolo, arquitectura
+
+abstract: In this paper, we propose an efficient and fast object de-
+tector which can process hundreds of frames per second. To achieve this goal we investigate three main aspects of the object detection framework: network architecture, loss function and training data (labeled and unlabeled). In or- der to obtain compact network architecture, we introduce various improvements, based on recent work, to develop an architecture which is computationally light-weight and achieves a reasonable performance. To further improve the performance, while keeping the complexity same, we utilize distillation loss function. Using distillation loss we transfer the knowledge of a more accurate teacher network to pro- posed light-weight student network. We propose various in- novations to make distillation efficient for the proposed one stage detector pipeline: objectness scaled distillation loss, feature map non-maximal suppression and a single unified distillation loss function for detection. Finally, building upon the distillation loss, we explore how much can we push the performance by utilizing the unlabeled data. We train our model with unlabeled data using the soft labels of the teacher network. Our final network consists of 10x fewer parameters than the VGG based object detection network and it achieves a speed ofmore than 200 FPS and proposed changes improve the detection accuracy by 14 mAP over the baseline on Pascal dataset.
+
+- Realizan algunas modificaciones a tiny yolo y lo entrenan usando destilacion para obtener un modelo que funcina a 200+ FPS y no pierde mAp. En general un problema que tiene este modelo es que no aprovecha los ejemplos negativos al momento de entrenar.
+- Entre las modificaciones cuentan reduccion de profundidad y cantidad de canales en features, uso de stacking layers (adicion de primeras capas a capas finales), introduccion de una modificacion de non maximum supression basada en features y la modificacion de la funcion de perdida en la componente de objectness de yolo. Se explicaran las 3 ultimas modificaciones
+- En la red ocurre una reduccion dimensional importante desde las primeras a las ultimas capas, por esto mismo se usan convoluciones de 1x1 para comprimir la informacion y reescalarla  a la capa donde se junta todo. Luego de esto se usan algunas capas convolucionales de 1x1 para realizar procesamiento.
+- **FN-NMS**
+
+Basicamente la modificacion a non maximum supression consiste en entrenar la red estudiante con solo una supresión.
+
+- **Entrenamiento y perdida**: 
+
+La forma de predecir de yolo es bastante especial ya que divide la imagen de entrada en un campo de 13x13 celdas sobre las que se predicen simultaneamente los scores de la clasificación clases, las bounding boxes de las imagenes y  el objectness (Concepto parecido a saliencia pero no es lo mismo, basicamente es como la probabilidad de que ahí haya algo).
+
+$$ INSERT\_YOLO\_LOSS$$
+
+Una problematica de la formulacion de la perdida en este caso es que al entrenar simulataneamente todo, se realiza aprendizaje de clases y bounding boxess en aquellas celdas donde no hay nada todo:[es problematico quitar de la nada esto ya que es posible que hayan perdidas en el aprendizaje de las features.]. Evitan este problema escalando según objectness las perdidas distintas de objectnes.
+
+$$Insert\_new\_loss$$
+
 # Layer/ feature level
 
 ### Like What You Like: Knowledge Distill via Neuron Selectivity Transfer Zehao
