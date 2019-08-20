@@ -43,15 +43,26 @@ Factores que influyen a una mejor convergencia
 # Papers Base
 
 
-## KD hinton (cambiar)
 
-- Formulacion exclusiva de softmax. Podria ser problematica en el caso de clasificaciones binarias.
+### UNIFYING DISTILLATION AND PRIVILEGED INFORMATION
 
-- Softmax de red tutora se suaviza usando temperatura.
+año: feb 2016
 
-  **Insertar eq**
+- Informacion privilegiada de Vapnik es un método que permite usar dos estrategias para aprovechar un modelo svm tutor para entrenar un estudiante; control de similaridad, el cual permite acelerar el entrenamiento relajando la variable de holgura $\xi$ de manera controlada por una red tutora y transferencia de conocimiento, la cual funciona de manera similar a la destilacion.
+- El paper basicamente propone un framework llamado destilacion generalizada, bajo el cual la tecnica descrita por cite:hinton_2015 e informacion privilegiada de vapnik son equivalentes.
+
+## Distilling the Knowledge in a Neural Network
+
+año: mar 2015
+
+- Un detalle interesante en el que vale la pena detenerse para el caso del trabajo de Hinton es que este se centra exclusivamente en la imitación de los logits en la capa de salida de una red neuronal, aprovechando que típicamente en el caso de clasificación la última capa usa una activación Softmax que produce scores sobre las clases normalizados en 1.
 
 
+- La red estudiante se entrena sobre la predicción de la red tutora a la vez que sobre los labels originales, para esto se vale de una combinación de las pérdidas de crossentropia de ambas usando una versión de softmax que incluye un valor \(T\) de temperatura.
+
+$$q_i =\frac{exp \left ( z_i/T \right)}{\sum_j exp \left ( z_j/T \right)}$$
+
+- Formulacion exclusiva para softmax. En caso de regresiones puede ser importante introducir normalizaciones en la perdida (recordar que el entrenamiento ocurre por gradiente) y en claso de clasificaciones binarias falta revisar.
 
 ## Learning Global Additive Explanations for Neural Nets Using Model Distillation
 
@@ -73,9 +84,44 @@ Este tipo de modelos suelen aproximarse
 
 # Video distillation
 
+
+
+### Back to the Future: Knowledge Distillation for Human Action Anticipation
+año: apr 2019
+
+abstract: We consider the task oftraining a neural network to anticipate human actions in video. This task is challenging given the complexity of video data, the stochastic nature of the future, and the limited amount of annotated train- ing data. In this paper, we propose a novel knowledge distillation framework that uses an action recognition net- work to supervise the training ofan action anticipation net- work, guiding the latter to attend to the relevant information needed for correctly anticipating the future actions. This framework is possible thanks to a novel loss function to ac- count for positional shifts ofsemantic concepts in a dynamic video. The knowledge distillation framework is a form of self-supervised learning, and it takes advantage of unlabeled data. Experimental results on JHMDB and EPIC- KITCHENS dataset show the effectiveness ofour approach.
+
+
+
+### Paying More Attention to Motion: Attention Distillation for Learning Video Representations
+
+año: apr 2019
+
+abstract:We address the challenging problem of learning motion representations using deep models for video recognition. To this end, we make use of attention modules that learn to highlight regions in the video and aggregate features for recognition. Specifically, we propose to leverage out- put attention maps as a vehicle to transfer the learned rep- resentation from a motion (flow) network to an RGB net- work. We systematically study the design ofattention mod- ules, and develop a novel method for attention distillation. Our method is evaluated on major action benchmarks, and consistently improves the performance ofthe baseline RGB network by a significant margin. Moreover, we demon- strate that our attention maps can leverage motion cues in learning to identify the location ofactions in video frames. We believe our method provides a step towards learning motion-aware representations in deep models
+
+- We provide the first systematic study of attention mechanisms for action recognition. We demonstrate that modeling attention as probabilistic variables can better facilitate the learning of deep model.
+
+- We propose a novel method for learning motion-aware video presentations from RGB frames. Our method learns an RGB network that mimics the attention map of a flow network, thereby distilling important motion knowledge into the representation learning.
+
+- Our method achieves consistent improvements of more than 1% across major datasets (UCF101 [41], HMDB51 [22] and 20BN-Something-Something [11, 28]) with almost no extra computational cost.
+
+- Destilan movimiento desde una flow network
+
+- Dificil de leer, técnica poco clara
+
+  
+
 ### TKD: Temporal Knowledge Distillation for Active Perception
 
+año: mar 2019
 
+tip: video distillation, lstm
+
+Abstract: Deep neural networks based methods have been proved to achieve outstanding performance on object detec- tion and classification tasks. Despite significant performance improvement, due to the deep structures, they still require prohibitive runtime to process images and maintain the highest possible performance for real-time applications. Observing the phenomenon that human vision system (HVS) relies heavily on the temporal dependencies among frames from the visual input to conduct recognition efficiently, we propose a novel framework dubbed as TKD: temporal knowledge distillation. This framework distills the temporal knowledge from a heavy neural networks based model over selected video frames (the perception of the moments) to a light-weight model. To en- able the distillation, we put forward two novel procedures: 1) an Long-short Term Memory (LSTM) based key frame selection method; and 2) a novel teacher-bounded loss design. To validate, we conduct comprehensive empirical evaluations using different object detection methods over multiple datasets including Youtube-Objects and Hollywood scene dataset. Our results show consistent improvement in accuracy-speed trad- offs for object detection over the frames of the dynamic scene, compare to other modern object recognition methods.
+
+- Usan tiny-yolo como arquitectura estudiante
+- Basicamente centran todo en entrenar tiny-yolo de manera "online", usando una lstm para detectar los frames interesantes (donde ocurren cambios importantes en la escena).
+- No se ve nada muy interesante en este y esta mal escrito
 
 ## Destilacion en imagenes
 
@@ -83,7 +129,7 @@ Este tipo de modelos suelen aproximarse
 
 año: mayo 2019
 
-tipo: Model distillation, yolo, arquitectura
+tipo: video distillation, yolo, arquitectura
 
 abstract: In this paper, we propose an efficient and fast object de-
 tector which can process hundreds of frames per second. To achieve this goal we investigate three main aspects of the object detection framework: network architecture, loss function and training data (labeled and unlabeled). In or- der to obtain compact network architecture, we introduce various improvements, based on recent work, to develop an architecture which is computationally light-weight and achieves a reasonable performance. To further improve the performance, while keeping the complexity same, we utilize distillation loss function. Using distillation loss we transfer the knowledge of a more accurate teacher network to pro- posed light-weight student network. We propose various in- novations to make distillation efficient for the proposed one stage detector pipeline: objectness scaled distillation loss, feature map non-maximal suppression and a single unified distillation loss function for detection. Finally, building upon the distillation loss, we explore how much can we push the performance by utilizing the unlabeled data. We train our model with unlabeled data using the soft labels of the teacher network. Our final network consists of 10x fewer parameters than the VGG based object detection network and it achieves a speed ofmore than 200 FPS and proposed changes improve the detection accuracy by 14 mAP over the baseline on Pascal dataset.
@@ -93,17 +139,25 @@ tector which can process hundreds of frames per second. To achieve this goal we 
 - En la red ocurre una reduccion dimensional importante desde las primeras a las ultimas capas, por esto mismo se usan convoluciones de 1x1 para comprimir la informacion y reescalarla  a la capa donde se junta todo. Luego de esto se usan algunas capas convolucionales de 1x1 para realizar procesamiento.
 - **FN-NMS**
 
-Basicamente la modificacion a non maximum supression consiste en entrenar la red estudiante con solo una supresión.
+En yolo, en los casos que un objeto corresponda a multiples celdas o bounding boxes la transferencia de conocimiento a una red estudiante puede resultar redundancia que ocasione perdida de desempeño. Yolo usa non máximum supresion para entrenar en estos casos, en la destilacion planteada en el paper se evita esta redundancia usando un filtro que mapee desde todas las detecciones cercanas de una misma clase a la de mayor objectness. Luego se entrena sobre esa deteccion.
 
-- **Entrenamiento y perdida**: 
+- **Destilacion y perdida escalada por objectness**: 
 
-La forma de predecir de yolo es bastante especial ya que divide la imagen de entrada en un campo de 13x13 celdas sobre las que se predicen simultaneamente los scores de la clasificación clases, las bounding boxes de las imagenes y  el objectness (Concepto parecido a saliencia pero no es lo mismo, basicamente es como la probabilidad de que ahí haya algo).
+La forma de predecir de yolo es bastante especial ya que divide la imagen de entrada en un campo de 13x13 celdas sobre las que se predicen simultaneamente los scores de la clasificación clases, las bounding boxes de las imagenes y  el objectness (probabilidad de que en cierta zona de la imagen haya algo). Para clasificacion la perdida suele ser crossentropy, para bounding box y objectness distancia $L_1$ o $L_2$.
 
-$$ INSERT\_YOLO\_LOSS$$
+$$ \mathcal{L}_{yolo} = \mathcal{L}_{cl}(p_i,\hat{p_i})+\mathcal{L}_{bb}(b_i,\hat{b_i})+ \mathcal{L}_{obj}(o_i,\hat{o_i}) $$
 
-Una problematica de la formulacion de la perdida en este caso es que al entrenar simulataneamente todo, se realiza aprendizaje de clases y bounding boxess en aquellas celdas donde no hay nada todo:[es problematico quitar de la nada esto ya que es posible que hayan perdidas en el aprendizaje de las features.]. Evitan este problema escalando según objectness las perdidas distintas de objectnes.
+Una problematica de la formulacion de la perdida en este caso es que al entrenar simulataneamente todo, se realiza aprendizaje de clases y bounding boxess en aquellas celdas donde no hay nada todo:[es problematico quitar de la nada esto ya que es posible que hayan perdidas en el aprendizaje de las features.]. Evitan este problema escalando según objectness las perdidas distintas de objectnes. Definiendo una ganancia $\lambda_D$, $o^{gt}$ como el ground truth, $\hat{o}$ como la salida de la red estudiante y $o^T$ como la salida de la red tutora la perdida de objectness pasa a ser.
 
-$$Insert\_new\_loss$$
+$$\mathcal{L}'_{obj}(o_i,\hat{o_i}) =  \mathcal{L}_{obj}(o^{gt}_i,\hat{o_i}) + \lambda_D \mathcal{L}_{obj}(o^T_i,\hat{o_i}) $$
+
+Similarmente, las perdidas de clasificacion y bounding box pasan a ser las siguientes. Notese la presencia de objectness escalando el peso de la perdida.
+
+$$\mathcal{L}'_{cl}(o_i,\hat{o_i}) =  \mathcal{L}_{cl}(o^{gt}_i,\hat{o_i}) + o^T_i \lambda_D \mathcal{L}_{cl}(o^T_i,\hat{o_i}) $$
+
+$$\mathcal{L}'_{bb}(o_i,\hat{o_i}) =  \mathcal{L}_{bb}(o^{gt}_i,\hat{o_i}) + o^T_i \lambda_D \mathcal{L}_{bb}(o^T_i,\hat{o_i}) $$
+
+- Aparentemente funciona bien
 
 # Layer/ feature level
 
@@ -345,3 +399,38 @@ Abstract: Deep learning has significantly advanced state-of-the-art of speech re
 
 
 - Aplican destilacion para un modelo compacto de neuronas parecido a LSTM.
+
+
+
+
+
+# Bayesian Distillation
+
+### Learning Deep Representations with Probabilistic Knowledge Transfer
+año: 2018
+
+
+
+keyword: Knowledge Transfer · feature level distillation, bayesian, 
+
+- Rather than hacer un matching directo entre los features como en casi todos los casos de layer level, hacen aproximan la distribución de probabilidades de la red estudiante a la red tutora.
+
+- El uso de probabilidades permite realizar knowledge transfer usando
+
+  - Cross-modal knowledge
+  - Features creados a mano (sift, etc)
+  - Transferir features usando tasks distintos al buscado
+  - Incorporar domain-knowledge
+
+- Al ser difícil de obtener de manera directa la distribucion completa de las features de la red se minimiza una distribucion condicional. Esta se estima usando kernel density estimation. Tomando un kernel $K$, la distribucion condicional para la red tutora es:
+
+  $$p^t_{i \mid j}= \frac{K( F_t^{i} F_t^j; 2\sigma_t^2)}{\sum^N_{k=1,k\neq j} K( F_t^{i} F_t^j; 2\sigma_t^2)} \in [0,1]$$ 
+
+  La distribucion para la red estudiante es equivalente cambiando los features $F_s^{i} $ y la varianza $\sigma_s^2$. Como kernels se proponen el uso del kernel gaussiano y una mejora interesante, la distancia coseno $K=\frac{1}{2} \frac{a^{\top}b}{\|a\|_2\|b\|_2}+1\in [0]$.
+
+- Ambas distribuciones se aproximan minimizando la divergencia Kullback-Leibler en su variante batch sobre muestras $D_{\mathrm{KL}}(P\|Q) = \sum_{i=1}^N \sum_{j=1, j\neq i}^N p(x) \ln \frac{p(x)}{q(x)} $, entrena usando adam en batches de 64 y 128.
+
+- Dicen algo mas dificil y interesante sobre mutual information C/R a la divergencia kullback leibler
+
+- Funciona sorprendentemente bien. todo:profundizar
+
