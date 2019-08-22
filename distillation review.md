@@ -1,4 +1,9 @@
+
+
+
+
 # Generalidades
+
 Division de formas de compresion:
 - Quantization
 - Pruning
@@ -125,6 +130,8 @@ Abstract: Deep neural networks based methods have been proved to achieve outstan
 
 ## Destilacion en imagenes
 
+
+
 ### Object detection at 200 Frames Per Second Rakesh [Completar]
 
 año: mayo 2019
@@ -161,7 +168,9 @@ $$\mathcal{L}'_{bb}(o_i,\hat{o_i}) =  \mathcal{L}_{bb}(o^{gt}_i,\hat{o_i}) + o^T
 
 # Layer/ feature level
 
-### Like What You Like: Knowledge Distill via Neuron Selectivity Transfer Zehao
+
+
+### Like What You Like: Knowledge Distill via Neuron Selectivity Transfer 
 Año: DEC 2017
 
 Applicacion: Imágenes
@@ -303,7 +312,18 @@ aplicacion:
 abstract: Motivated by the recently developed distillation approaches that aim to obtain small and fast-to-execute models, in this paper a novel Layer Selectivity Learning (LSL) framework is proposed for learning deep models. We firstly use an asymmetric dual-model learning framework, called Auxiliary Structure Learning (ASL), to train a small model with the help of a larger and well-trained model. Then, the intermediate layer selection scheme, called the Layer Selectivity Procedure (LSP), is exploited to determine the corresponding intermediate layers of source and target models. The LSP is achieved by two novel matrices, the layered inter-class Gram matrix and the inter-layered Gram matrix, to evaluate the diversity and discrimination of feature maps. The experimental results, demonstrated using three publicly available datasets, present the superior performance of model training using the LSL deep model learning framework.
 
 - Usa modelos y frameworks demasiado viejos para ser de 2019.
-- todo: profundizar en matriz de gram
+
+- El modelo consiste de dos partes, lsp o layer selectivity procedure que usa el hessiano entre capas para determinar que features linkear y ALs o auxiliary structure learning que realiza la transferencia de conocimiento entre las features de los modelos tutor y estudiantes .
+
+- ALS basicamente consiste en usar capas para proyectar las features de un modelo al otro. mediante una capa de projeccion por modelo que mapee los features a un vector de una dimensionalidad en $\mathbb{R}^n$ y otra capa densa de alineamiento mediante las que penar las diferencias.
+
+  $$\mathcal{L}_{Align}^{(K)}(t,s) = \| X_t^{(i)} -X_s^{(j)}  \|_2$$
+
+  La perdida final incorpora la suma de todas las perdidas de todas las etapas de  ALS.
+
+  $$\mathcal{L}_{total}=\sum_{k=1}^n \mathcal{L}_{Align}^{(k)} + \mathcal{L}_{model}^{(p)} $
+
+- La otra etapa, LSP consiste básicamente en seleccionar que capas de la la red tutora transferir usando el argumento minimo del grammiamo inter clases sumado al grammiano entre capas.
 
 ### A Gift from Knowledge Distillation: Fast Optimization, Network Minimization and Transfer Learning
 
@@ -407,7 +427,7 @@ Abstract: Deep learning has significantly advanced state-of-the-art of speech re
 # Bayesian Distillation
 
 ### Learning Deep Representations with Probabilistic Knowledge Transfer
-año: 2018
+año: Marzo 2018
 
 
 
@@ -432,5 +452,37 @@ keyword: Knowledge Transfer · feature level distillation, bayesian,
 
 - Dicen algo mas dificil y interesante sobre mutual information C/R a la divergencia kullback leibler
 
-- Funciona sorprendentemente bien. todo:profundizar
+- Funciona bien. todo:profundizar
 
+### Dropout Distillation
+
+Año: 2016
+
+- La destilacion en este caso se centra en destilar una red bayesiana en la linea de lo expuesto por yarin gal en cite:gal2015; el uso de dropout al momento de realizar la inferencia sobre una red entrenada usando esa tecnica permite realizar sampleos sobre la version probabilistica de la red. De tal forma, usando una cantidad fija de sampleos se pueden estimar la media y varianza para regresion o la moda y algun otro estimador de dispersion para clasificación como medidas de la esperanza de la red original. Lo bueno es que esto mejora la inferencia y permite medir incerteza, lo malo es que requiere de una cantidad mayor de sampleos por inferencia (normalmente 10).
+- El paper se centra en la destilacion de la esperanza de la red bayesiana para poder realizar inferencia en tiempo real usando la esperanza en vez de estimar sobre una cantidad mayor de sampleos de la inferencia.
+- En su forma mas basica, esta tarea consiste en encontrar pesos de la red bayesiana $\hat{W}$ tal que el error de la inferencia sea el minimo. Esto se hace entrenando una red de la misma estructura de la red original usando divergencia KL entre ambas redes. todo:duda_entre_que?
+- De la misma forma se puede hechar mano a la destilacion clasica expuesta por hinton para transferir el conocimiento de una red bayesiana a una red estudiante de menor tamaño.
+
+### Zero-shot Knowledge Transfer via Adversarial Belief Matching
+
+año: mayo 2019
+
+- La gran mayoria de los modelos interesantes que se usan hoy en dia se entrenan via el uso de cantidades estratosfericas de datos, los cuales suelen ser de datasets privados. Razon por la cual entrenar una red via el uso del dataset original no es posible. El paper se centra en la destilacion del conocimiento de una red tutora sin datos (de ahi el zero shot).
+- Toman una tecnica de GP llamada inducing point methods, que basicamente consiste en tomar puntos representativos del dataset, los cuales son usados para reducir la complejidad computacional all momento de la inferencia. En este contexto, wang introduce en cite:wang el uso de un metodo de destilacion de dataset para generar pseudoimagenes que cumplan el mismo objetivo. En la practica, los inducing points corresponden a sampleos de una red generadora entrenada con la red para maximizar la divergencia KL entre la red estudiante y el generador.
+- Usan un generador, una red estudiante y una red tutora pre-entrenada. Suman a la perdida de la red estudiante el uso de una perdida que incluye attention maps en algunos bloques comunes de la red estudiante con la red tutoria, de la misma manera que las vistas en las de layer level distillation.
+- La perdida para el generador es basicamente menos la divergencia KL entre la red estudiante y la red tutora. Para la red estudiante es la divergencia KL entre a red estudiante y la red tutora mas un termino de regularizacion sobre la atencion en las features de la red.
+- Funciona relativamente bien en datasets pequeños del tipo cifar 10.
+
+### Adversarial Distillation of Bayesian Neural Network Posteriors
+año 2018
+
+- Plantean destilacion como una forma de reducir el costo de producir samples en BNN. Usan GAN como una forma de exploracion MCMC sobre la distribucion de una red bayesiana. En otras palabras, usan GAN para aproximar la distribucion de la BNN original con una red generativa.
+- Al parecer no funciona muy bien.
+- No se entiende el objetivo
+
+### KDGAN: Knowledge Distillation with Generative Adversarial Networks [MALO]
+
+año: 2018
+
+- Usan un gan en una simplificacion de la formulacion IR-GAN cite:wang-IRGAN, una adaptacion de GAN al contexto de information retrieval, es decir, recuperacion de un documento (o imagen) desde keywords o un caption. 
+- Se centra en recomendacion de tags. No se profundizó en el documento.
