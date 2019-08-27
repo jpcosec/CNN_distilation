@@ -9,29 +9,21 @@ Division de formas de compresion:
 - Pruning
 - Distilation
 
-## Sobre la convergencia de las CNNs, el overfitting y por que conviene imitar el conocimiento de una red y no entrenar el modelo desde 0
-
-todo: reexplicar
-
-Por que entrenar intentando ajustarse al conocimiento de una red grande en vez de usar una red pequeña
-
-En escencia una red neuronal fully connected de solo una capa debiese ser suficiente para poder aproximar cualquier funcion con un nivel de presicion arbitrario, controlado solo por la cantidad de parametros del modelo. todo:revisar
-
-De esta manera, el uso de arquitecturas deep como las convoluciones, las recurrencias o cualquier otra lo que hacen es descubrir patrones dentro del dato de entrada, cosa que antes debía ser diseñada a mano por un experto. La red es capaz de combinar y aproximar estos, sin necesariamente dar un significado a cada uno.
-
-Un detalle fundamental que muchas veces se pasa por alto es que al momento de analizar datos naturales como son fotos o lenguaje hablado se cuenta con un conjunto limitado de ejemplos, mientras que los ejemplos naturales son muchisimos mas.
-
-Dado el modo de entrenamiento de la red y la carencia de significado que se da a los patrones, es un peligro siempre presente el sobre ajustarse a los datos sobre los que se entrenó, perdiendo la capacidad de ajuste al dato real. La forma en que se logra combatir este efecto actualmente es mediante la introduccion de artificios matematicos que permitan suavizar la funcion, permitiéndole predecir mejor en su vecindad; es decir, regularizando.
-
-El entrenamiento de una CNN consiste basicamente en resolver un problema de optimizacion complejo, el cual se resuelve mediante backpropagation. Esto ultimo equivale a modificar los pesos de la red dando pequeños pasos en una direccion que permitan descender por el gradiente del error. Si bien la tecnica ha mostrado ser efectiva en muchos casos, esta no dista mucho de bajar un cerro con los ojos cerrados. 
-
-Factores que influyen a una mejor convergencia
-
-- Capacidad de aprendizaje de la red (numero de parámetros, estructura de la misma (modulos convolucionales)).
-- Tecnicas de regularizacion (data agumentation, normalizacion por batch, aleatorizacion).
-- Una cantidad masiva del orden de cientos de miles de datos.
+## Por que entrenar intentando ajustarse al conocimiento de una red grande en vez de usar una red pequeña
 
 
+
+Una pregunta no trivial que puede salir a la palestra al momento de revisar investigaciones relativas a transfer learning y destilacion de modelo es el por que no simplemente entrenar la red desde 0, en vez de complicar el procedimiento usando otro modelo, en general mas pesado para esta tarea. 
+
+En escencia una red neuronal fully connected de solo una capa debiese ser suficiente para poder aproximar cualquier funcion con un nivel de presicion arbitrario, controlado solo por la cantidad de parametros del modelo. En el caso de la clasificacion de datos reales, la tarea no deja de ser la misma, la aproximacion de una función hipotetica capaz de realizar el mapeo de los datos $x$ a sus etiquetas $y$. Sin embargo, un detalle fundamental que muchas veces se pasa por alto es que al momento de analizar datos naturales la cantidad de sampleos disponibles de esta funcion es limitada, cosa que se acrecienta con datasets obtenidos de manera local \footnote{No por trasnacionales con recursos como Google.}.
+
+Antiguamente, gran parte del data science, procesamiento de imagenes incluido, consistia en diseñar y descubrir patrones dentro de los datos de entrada, cosa de reducir la dimensionalidad del problema y facilitar la tarea del clasificado. La novedad del Deep Learning consiste precisamente en esa capacidad de las redes de descubrir  esos patrones sin necesidad de usar conocimiento experto, solamente en base a los datos. Lamentablemente, dado el modo de entrenamiento de la red\footnote{Y la falta de significado semantico que permita dar sentido a estos datos.}, es un peligro siempre presente el sobre ajustarse a los datos sobre los que se entrenó, perdiendo la capacidad de prediccion sobre los datos reales. La forma en que se logra combatir este efecto actualmente es mediante la introduccion de artificios matematicos que permitan suavizar la funcion, permitiéndole predecir mejor en su vecindad; es decir, regularizando tales como
+
+- Usar una cantidad del orden de cientos de miles de datos para aproximar una mayor generalidad antes que un subconjunto del dominio sobre el que se trabaja.
+- Incrementar la capacidad de aprendizaje de la red  aumentando el numero de parámetros, y diseñando la estructura de la misma via uso de capas convolucionales, pooling, capas de sampleo, recurrencias, etc.
+- Tecnicas de regularizacion  como data augmentation, normalizacion por batch, aleatorizacion de entrada y pesos, etc.
+
+En definitiva, si bien un dataset de entrenamiento probablemente puede ser aproximado de forma facil y limpia por redes poco profundas de menos parametros, el ajustarse directamente a este dataset no necesariamente resuelve el problema (task) real. Por suerte, en el ajuste parametrico de un modelo hay información sobre el dataset o conocimiento que puede ser usado para adelantar, acelerar o mejorar el entrenamiento de otros. De manera similar a como los sistemas biologicos y en particular los seres humanos aprovechan el conocimiento de antepasados para aprender.
 
 ## Cosas que inluyen en velocidad de modelo
 
@@ -132,18 +124,24 @@ Abstract: Deep neural networks based methods have been proved to achieve outstan
 
 
 
-### Object detection at 200 Frames Per Second Rakesh [Completar]
+### Object detection at 200 Frames Per Second  [Completar]
 
 año: mayo 2019
 
 tipo: video distillation, yolo, arquitectura
 
-abstract: In this paper, we propose an efficient and fast object de-
-tector which can process hundreds of frames per second. To achieve this goal we investigate three main aspects of the object detection framework: network architecture, loss function and training data (labeled and unlabeled). In or- der to obtain compact network architecture, we introduce various improvements, based on recent work, to develop an architecture which is computationally light-weight and achieves a reasonable performance. To further improve the performance, while keeping the complexity same, we utilize distillation loss function. Using distillation loss we transfer the knowledge of a more accurate teacher network to pro- posed light-weight student network. We propose various in- novations to make distillation efficient for the proposed one stage detector pipeline: objectness scaled distillation loss, feature map non-maximal suppression and a single unified distillation loss function for detection. Finally, building upon the distillation loss, we explore how much can we push the performance by utilizing the unlabeled data. We train our model with unlabeled data using the soft labels of the teacher network. Our final network consists of 10x fewer parameters than the VGG based object detection network and it achieves a speed ofmore than 200 FPS and proposed changes improve the detection accuracy by 14 mAP over the baseline on Pascal dataset.
 
-- Realizan algunas modificaciones a tiny yolo y lo entrenan usando destilacion para obtener un modelo que funcina a 200+ FPS y no pierde mAp. En general un problema que tiene este modelo es que no aprovecha los ejemplos negativos al momento de entrenar.
-- Entre las modificaciones cuentan reduccion de profundidad y cantidad de canales en features, uso de stacking layers (adicion de primeras capas a capas finales), introduccion de una modificacion de non maximum supression basada en features y la modificacion de la funcion de perdida en la componente de objectness de yolo. Se explicaran las 3 ultimas modificaciones
-- En la red ocurre una reduccion dimensional importante desde las primeras a las ultimas capas, por esto mismo se usan convoluciones de 1x1 para comprimir la informacion y reescalarla  a la capa donde se junta todo. Luego de esto se usan algunas capas convolucionales de 1x1 para realizar procesamiento.
+
+
+
+El paper object distillation at 200 FPS es uno de los ejemplos que vale la pena revisar. Realizan algunas modificaciones a tiny yolo y lo entrenan usando destilacion para obtener un modelo que funcina a 200+ FPS y no pierde mAp.
+
+Entre las modificaciones cuentan reduccion de profundidad y cantidad de canales en features, uso de stacking layers (adicion de primeras capas a capas finales), introduccion de una modificacion de non maximum supression basada en features y la modificacion de la funcion de perdida en la componente de objectness de yolo. Se explicaran las 3 ultimas modificaciones
+
+- **Modificaciones de arquitectura**
+
+En la red ocurre una reduccion dimensional importante desde las primeras a las ultimas capas, por esto mismo se usan convoluciones de 1x1 para comprimir la informacion y reescalarla  a la capa donde se junta todo. Luego de esto se usan algunas capas convolucionales de 1x1 para computaciones.
+
 - **FN-NMS**
 
 En yolo, en los casos que un objeto corresponda a multiples celdas o bounding boxes la transferencia de conocimiento a una red estudiante puede resultar redundancia que ocasione perdida de desempeño. Yolo usa non máximum supresion para entrenar en estos casos, en la destilacion planteada en el paper se evita esta redundancia usando un filtro que mapee desde todas las detecciones cercanas de una misma clase a la de mayor objectness. Luego se entrena sobre esa deteccion.
@@ -164,11 +162,11 @@ $$\mathcal{L}'_{cl}(o_i,\hat{o_i}) =  \mathcal{L}_{cl}(o^{gt}_i,\hat{o_i}) + o^T
 
 $$\mathcal{L}'_{bb}(o_i,\hat{o_i}) =  \mathcal{L}_{bb}(o^{gt}_i,\hat{o_i}) + o^T_i \lambda_D \mathcal{L}_{bb}(o^T_i,\hat{o_i}) $$
 
-- Aparentemente funciona bien
+
 
 # Layer/ feature level
 
-
+Dado el problema planteado se pasará a detallar algunas investigaciones que comparten en comun el hacer uso de los features para 
 
 ### Like What You Like: Knowledge Distill via Neuron Selectivity Transfer 
 Año: DEC 2017
@@ -177,36 +175,25 @@ Applicacion: Imágenes
 
 tipo: layer level distillation, CNN
 
+En NST interpretan el mapa de activacion de cada posicion como si fuera un sampleo de como la red neuronal interpreta la imagen de entrada, con esto se puede ver en que se centra la red neuronal para realizar la deteccion. Basado en esto evitan hacer un match directo de los feature maps ya que esto ignora la densidad de sampleo en el espacio de las features de la red tutora. En vez de eso busca realizar un alineamiento de las distribuciones de la red tutora y estudiante.  
+
+Definen entonces el conocimiento selectivo de las neuronas como la activacion de cada neurona para un patron particular encontrado en la entrada $X$ bajo un una tarea particular.  Desde esto el metodo propuesto es neural selectivity transfer, o la transferencia de este conocimiento. Para el entrenamiento se usan dos perdidas distintas, una para los feature maps y otra para la clasificacion. Clasificacion se pena con cross entropy y feature maps con MMD, discrepancia maxima de media.
+
+$$ \mathcal{L}_{NST}(WS) =\mathcal{L}_{ce}(Y_{true},ps)+\frac{\lambda}{2} \mathcal{L}_{MDD^2}(F_T, F_S) $$
 
 
-Abstract: In this paper, we propose a novel knowledge transfer method by treating it as a distribution matching problem. Particularly, we match the distributions ofneuron selectivity patterns between teacher and student networks. To achieve this goal, we devise a new KT loss function by minimizing the Maximum Mean Discrepancy (MMD) metric between these distributions.
 
-- El mapa de activacion de cada posicion resulta un sampleo de como la red neuronal interpreta la imagen de entrada y centrarse en la distribucion permite ver en que se centra la red neuronal para realizar la deteccion.
-- Evita hacer un match directo de los feature maps ya que esto ignora la densidad de sampleo en el espacio todo:{que significa esto}. En vez de eso busca realizar un alineamiento de las distribuciones.  
-
-- selectivity knowledge of neurons: Cada neurona se activa bajo un patron particular encontrado en entrada $X$ bajo un una tarea particular. 
-
-- NST: se usan dos perdidas distintas, una para los feature maps y otra para la clasificacion. Clasificacion se pena con cross entropy y feature maps con MMD. 
-
-  $$ \mathcal{L}_{NST}(WS) =\mathcal{L}_{ce}(Y_{true},ps)+\frac{\lambda}{2} \mathcal{L}_{MDD^2}(F_T, F_S) $$
-
-- MMD: se tomó prestado desde domain adaptation.
-
-Dos sets de samples $S_p=\{p^i\}^N_{i=1}$ $S_q=\{q^i\}^m_{i=1}$, luego, la distancia MMD es:
+El MMD se calcula de la siguiente forma. Dos sets de samples $S_p=\{p^i\}^N_{i=1}$ $S_q=\{q^i\}^m_{i=1}$, luego, la distancia MMD es:
 
 $$ \mathcal{L}_{MDD^2}(S_p,S_q)= \mid \mid \frac{1}{N} \sum^N_{i=1}\phi(p^i) - \frac{1}{M} \sum^M_{j=1}\phi(q^j) \mid \mid$$
 
-donde $\phi(.)$ es una funcion explicita de mapeo. Usando el kernel trick todo:documentar se puede reformular como
+donde $\phi(.)$ es una funcion explicita de mapeo. Usando el kernel trick  se puede reformular como
 
 $$ \mathcal{L}_{MDD^2}(S_p,S_q)= \mid \mid \frac{1}{N^2} \sum^N_{i=1}\sum^N_{i'=1} k (p^i,p^{i'}) + \frac{1}{M^2} \sum^M_{j=1}\sum^M_{j'=1} k (q^j,q^{j'}) -+ \frac{1}{MN} \sum^M_{i=1}\sum^M_{j'=1} k (p^i,q^{j})  $$
 
-- Se aplica usando sampleos  desde $F_T$ y $F_S$ sampleando la activacion a traves de todos los canales y normalizando.
+Lo cual finalmente se aplica usando sampleos  desde $F_T$ y $F_S$, sampleando la activacion a traves de todos los canales y normalizando, $p^i=\frac{f^i_T}{\mid\mid f^i_T \mid\mid_2}$ e identicamente para q con FT
 
-  $$p^i=\frac{f^i_T}{\mid\mid f^i_T \mid\mid_2}$$ e identicamente para q con FT
-
-- sobre el k, se usaron kernel lineal, polinomial de $d=2$ y $c=0$ y gaussiano con $\sigma^2$ igual al ECM entre los pares. El caso lineal tiene ciertas semejanzas con Attention mapping de *Z. Sergey and K. Nikos. Paying more attention to attention: Improving the performance of convolutional neural networks via attention transfer*. Caso polinomial de orden 2 da la gram matrix todo:revisar.
-- En general funciona mejor que todos los puntos con los que se compara el paper. en el caso de pascal VOC 2007 funciona mejor incluso que la base (Faster R-CNN)
-- No se probo con GAN, lo mencionan como una idea interesante
+Sobre el k usado, se usaron kernel lineal, polinomial de $d=2$ y $c=0$ y gaussiano con $\sigma^2$ igual al ECM entre los pares. El caso lineal tiene ciertas semejanzas con Att y el caso polinomial de orden 2 da la matriz de gramm usada en FSP. En general funciona mejor que todos los puntos con los que se compara el paper. En el caso de pascal VOC 2007 funciona mejor incluso que la base (Faster R-CNN). Un detalle interesante, si bien no lo probaron con GAN lo postulan como una forma interesante a probar en adelante ya que permite recorrer de mejor manera el espacio de las features.
 
 ### FITNETS: HINTS FOR THIN DEEP NETS
 Año: MAR 2015 
@@ -215,20 +202,17 @@ Typo: Layer level distillation, CNN,
 
 Aplicacion: Imágenes
 
-Abstract: While depth tends to improve network performances, it also makes gradient-based training more difficult since deeper networks tend to be more non-linear. The re- cently proposed knowledge distillation approach is aimed at obtaining small and fast-to-execute models, and it has shown that a student network could imitate the soft output of a larger teacher network or ensemble of networks. In this paper, we extend this idea to allow the training of a student that is deeper and thinner than the teacher, using not only the outputs but also the intermediate represen- tations learned by the teacher as hints to improve the training process and final performance of the student. Because the student intermediate hidden layer will generally be smaller than the teacher’s intermediate hidden layer, additional pa- rameters are introduced to map the student hidden layer to the prediction of the teacher hidden layer. This allows one to train deeper students that can generalize better or run faster, a trade-off that is controlled by the chosen student capacity. For example, on CIFAR-10, a deep student network with almost 10.4 times less parameters outperforms a larger, state-of-the-art teacher network.
+La primera de estas investigaciones es fitnets del 2015, en esta se usan representaciones intermedias (features) como "hints" de lo que una red estudiante de menor complejidad debiese aprender de una red de mayor complejidad. Esto mejora la capacidad de generalizacion con respecto a un modelo enfocado solo en el resultado final reduciendo a su vez la carga computacional.
 
-- Se usan representaciones intermedias (features) como "hints" de lo que una red estudiante de menor dimensionalidad debiese aprender de una red de mayor dimensionalidad. Esto mejora la capacidad de generalizacion cr a un modelo enfocado solo en el resultado final reduciendo a su vez la carga computacional.
-- Definen un hint como la salida de una capa convolucional $F_{T}$, desde la cual la capa de la red estudiante debe aprender. Se supone que este aprendizaje sirve como una especie de regularizacion, por lo que recomiendan usar representaciones de la parte media de la red.
-- El entrenamiento se realiza usando una perdida en la siguiente forma (respetando la notacion de arriba). $r$ es un regresor que se usa simplemente para poder ajustar el tamaño de $F_S$ al de $F_T$, este debe usar la misma funcion de activacion de $F_{T}$. 
+Definen un hint como la salida de una capa convolucional $F_{T}$, desde la cual la capa de la red estudiante debe aprender. Se supone que este aprendizaje sirve como una especie de regularizacion, por lo que recomiendan usar representaciones de la parte media de la red.
+
+El entrenamiento se realiza usando una perdida en la siguiente forma (respetando la notacion de arriba). $r$ es un regresor consistente en una capa convolucional con la misma funcion de activacion de $F_T$ que se usa simplemente para poder ajustar el tamaño de $F_S$ al de $F_T$, el cual se preentrena antes de entrenar, este debe usar la misma funcion de activacion de $F_{T}$. 
 
 $$ \mathcal{L}_{HT}=\frac{1}{2}\mid \mid F_T-r(F_s) \mid \mid^2$$
 
-$$ \mathcal{L}_{NST}(WS) =\mathcal{L}_{ce}(Y_{true},ps)+\lambda \mathcal{L}_{HT}(F_T, F_S) $$
+$$ \mathcal{L}_{NST}(W_S) =\mathcal{L}_{ce}(Y_{true},ps)+\lambda \mathcal{L}_{HT}(F_T, F_S) $$
 
-- Dado que un r fully connected aumenta de manera drastica la cantidad de parametros necesarios para el caso convoucional, se usa un $r$ convolucional
-
-- Primero preentrena la red usando solo el regresor y luego se entrena completa.
-- No dan muchos detalles sobre la arquitectura usada.
+El estudio se centra en el uso de redes estudiantes mas profundas que las redes destiladas pero de menor ancho y por lo mismo menor cantidad de parametros. El funcionamiento es ligeramente mejor al de hinton.
 
 ### Paying More Attention to Attention: Improving the Performance of Convolutional Neural Networks via Attention Transfer
 
@@ -238,23 +222,15 @@ Tipo: Layer level distillation, CNN,
 
 Applicacion: Imágenes
 
-Abstract: Attention plays a critical role in human visual experience. Furthermore, it has recently been demonstrated that attention can also play an important role in the
-Attention plays a critical role in human visual experience. Furthermore, it has recently been demonstrated that attention can also play an important role in the context of applying artificial neural networks to a variety of tasks from fields such
-recently been demonstrated that attention can also play an important role in the context of applying artificial neural networks to a variety of tasks from fields such as computer vision and NLP. In this work we show that, by properly defining
-context of applying artificial neural networks to a variety of tasks from fields such as computer vision and NLP. In this work we show that, by properly defining attention for convolutional neural networks, we can actually use this type of in-as computer vision and NLP. In this work we show that, by properly defining attention for convolutional neural networks, we can actually use this type of in- formation in order to significantly improve the performance of a student CNN
-attention for convolutional neural networks, we can actually use this type of in- formation in order to significantly improve the performance of a student CNN network by forcing it to mimic the attention maps of a powerful teacher network.
-formation in order to significantly improve the performance of a student CNN network by forcing it to mimic the attention maps of a powerful teacher network. To that end, we propose several novel methods of transferring attention, show-network by forcing it to mimic the attention maps of a powerful teacher network. To that end, we propose several novel methods of transferring attention, show- ing consistent improvement across a variety of datasets and convolutional neu-To that end, we propose several novel methods of transferring attention, show- ing consistent improvement across a variety of datasets and convolutional neu- ral network architectures. Code and models for our experiments are available at
-ing consistent improvement across a variety of datasets and convolutional neu- ral network architectures. Code and models for our experiments are available at https://github.com/szagoruyko/attention-transfer.
+Code and models for our experiments are available at https://github.com/szagoruyko/attention-transfer.
 
-- Se toma prestado el concepto de atencion desde la percepcion humana. Se distinguen 2 tripos de procesos de percepcion; atencionales y no atencionales. Los primeros permiten observar generalidades de una escena y recolectar informacion de alto nivel. Desde este proceso se logra navegar en ceirtos detalles de una escena.
+Se toma prestado el concepto de atencion desde la percepcion humana. Se distinguen 2 tipos de procesos de percepcion; atencionales y no atencionales. Los primeros permiten observar generalidades de una escena y recolectar informacion de alto nivel. Desde este proceso se logra navegar en ciertos detalles de una escena.
 
-- En el contexto de CNNs, se considera la atencion como mapas espaciales que permiten codificar donde enfocar mas el procesamiento. Estos mapas se pueden definir con respecto a varias capas de la red y segun en que se basen se dividen en 2 tipos, de activacion y de gradiente.
+En el contexto de CNNs, se considera la atencion como mapas espaciales que permiten codificar donde enfocar mas el procesamiento. Estos mapas se pueden definir con respecto a varias capas de la red y segun en que se basen se dividen en 2 tipos, de activacion y de gradiente. Se realiza un estudio sobre como los mapas de atencion varían segun arquitecturas y como estos mapas pueden ser transferidos a redes estudiantes desde una red tutora ya entrenada. Se centraron en arquitecturas fully convolutional (redes donde la clasificacion o regresion final se realiza sin el uso de capas densas, si no aprovechando la reduccion dimensional que dan las convoluciones). 
 
-- Se realiza un estudio sobre como los mapas de atencion varían segun arquitecturas y como estos mapas pueden ser transferidos a redes estudiantes desde una red tutora ya entrenada. Se centraron en arquitecturas fully convolutional (redes donde la clasificacion o regresion final se realiza sin el uso de capas densas, si no aprovechando la reduccion dimensional que dan las convoluciones). 
 
-  
 
-- ** Mapa de atencion basado en activaciones**
+- **Mapa de atencion basado en activaciones**
 
   Considerando una capa de una red y su activación $F_{T}$ se define una funcion de mapeo de activacion $ \mathcal{F}: \mathcal{R}^{C \times H \times W} \rightarrow \mathcal{R}^{ H \times W}$. Asumiendo que para una neurona particular, el valor absoluto de su activacion puede ser tomado como una medida de la importancia que da la red a un determinado input, para obtener con respecto a una posicion $h,w$ se pueden usar alguno de los siguientes estadisticos.
 
@@ -270,7 +246,7 @@ ing consistent improvement across a variety of datasets and convolutional neu- r
 
   Donde $\mathcal{L}_{at}(F_T, F_S)=  \sum_{j \in \mathcal{C}} \left \|  \frac{Q_S^j}{\left \| Q_S^j \right \|}_2 + \frac{Q_T^j}{\left \| Q_T^j \right \|}_2 \right \|_p$
 
-- ** Mapa de atencion basado en gradiente**
+- **Mapa de atencion basado en gradiente**
 
 Para el caso de gradiente, se asume que el gradiente de la perdida de clasificacion con respecto a una entrada permite medir la "sensibilidad" de la red ante el estimulo, para esto se define el gradiente como.
 
@@ -280,72 +256,58 @@ La perdida toma la siguiente forma, la cual puede ser dificil para analizarse an
 
 $$ \mathcal{L}_{NST}(WS) =\mathcal{L}_{ce}(Y_{true},ps)+\frac{\lambda}{2} \left \| J_s - J_T \right \|_2 $$
 
-- En general ambos metodos funcionan bien
+En general ambos metodos funcionan bien.
 
 ### Paraphrasing Complex Network: Network Compression via Factor Transfer
 
 Año: 2018
 
-Tipo: layer level
 
-Aplicacion: 
 
-Abstract: Many researchers have sought ways of model compression to reduce the size of a deep neural network (DNN) with minimal performance degradation in order to use DNNs in embedded systems. Among the model compression methods, a method called knowledge transfer is to train a student network with a stronger teacher network. In this paper, we propose a novel knowledge transfer method which uses convolutional operations to paraphrase teacher’s knowledge and to translate it for the student. This is done by two convolutional modules, which are called a paraphraser and a translator. The paraphraser is trained in an unsupervised manner to extract the teacher factors which are defined as paraphrased information of the teacher network. The translator located at the student network extracts the student factors and helps to translate the teacher factors by mimicking them. We observed that our student network trained with the proposed factor transfer method outperforms the ones trained with conventional knowledge transfer methods.
+Destila a nivel de features, pero proponiendo el uso de  capas intermedias en un "autoencoder fashion" que sirva de "interprete" entre el conocimiento de la red tutora y la estudiante, de manera similar al regresor de fitsnets solo que con una mayor cantidad de abstraccion entre medio, le pone de nombre "factores".  
 
-- Destila a nivel de features, pero proponiendo el uso de  capas intermedias en un "autoencoder fashion" que sirva de "interprete" entre el conocimiento de la red tutora y la estudiante, de manera similar al regresor de fitsnets solo que con una mayor cantidad de abstraccion entre medio, le pone de nombre "factores".  
+El traspaso de informacion se realiza en 2 niveles, primero se entrena un parafreasador desde la red tutora, reconstruyendo el input desde la capa desde la cual se quiere realizar el traspaso de informacion. Se minimiza entonces la siguiente perdida en esta etapa, $P(x)$.
 
-- El traspaso de informacion se realiza en 2 niveles, primero se entrena un parafreasador desde la red tutora, reconstruyendo el input desde la capa desde la cual se quiere realizar el traspaso de informacion. Se minimiza entonces la siguiente perdida en esta etapa, $P(x)$.
+$$\mathcal{L}_{rec}=\left \| x - P(x) \right \| ^2$$
 
-  $$\mathcal{L}_{rec}=\left \| x - P(x) \right \| ^2$$
+Luego de entrenado el parafraseador, se entrena la red estudiante ubicando una capa de interfaz que sirve de traductor entre el factor (salida del parafraseador) y la salida de la red estudiante. Luego, se usa la misma funcion de perdida de attention transfer entre las salidas del traductor y el parafraseador, a lo cual se suma la perdida de cross entropy para la salida.
 
-- Luego de entrenado el parafraseador, se entrena la red estudiante ubicando una capa de interfaz que sirve de traductor entre el factor (salida del parafraseador) y la salida de la red estudiante. Luego, se usa la misma funcion de perdida de attention transfer entre las salidas del traductor y el parafraseador, a lo cual se suma la perdida de cross entropy para la salida.
-
-- Funciona regularmente bien, no demasiado, si regularmente
+Funciona regularmente bien, no demasiado, si regularmente
 
 ### Layer-Level Knowledge Distillation for Deep Neural Network Learning
 año: abril 2019
 
-tipo: Layer level distillation
-
-aplicacion:
-
 abstract: Motivated by the recently developed distillation approaches that aim to obtain small and fast-to-execute models, in this paper a novel Layer Selectivity Learning (LSL) framework is proposed for learning deep models. We firstly use an asymmetric dual-model learning framework, called Auxiliary Structure Learning (ASL), to train a small model with the help of a larger and well-trained model. Then, the intermediate layer selection scheme, called the Layer Selectivity Procedure (LSP), is exploited to determine the corresponding intermediate layers of source and target models. The LSP is achieved by two novel matrices, the layered inter-class Gram matrix and the inter-layered Gram matrix, to evaluate the diversity and discrimination of feature maps. The experimental results, demonstrated using three publicly available datasets, present the superior performance of model training using the LSL deep model learning framework.
 
-- Usa modelos y frameworks demasiado viejos para ser de 2019.
+El modelo consiste de dos partes, lsp o layer selectivity procedure que usa el hessiano entre capas para determinar que features linkear y ALs o auxiliary structure learning que realiza la transferencia de conocimiento entre las features de los modelos tutor y estudiantes .
 
-- El modelo consiste de dos partes, lsp o layer selectivity procedure que usa el hessiano entre capas para determinar que features linkear y ALs o auxiliary structure learning que realiza la transferencia de conocimiento entre las features de los modelos tutor y estudiantes .
+ALS basicamente consiste en usar capas para proyectar las features de un modelo al otro. mediante una capa de projeccion por modelo que mapee los features a un vector de una dimensionalidad en $\mathbb{R}^n$ y otra capa densa de alineamiento mediante las que penar las diferencias.
 
-- ALS basicamente consiste en usar capas para proyectar las features de un modelo al otro. mediante una capa de projeccion por modelo que mapee los features a un vector de una dimensionalidad en $\mathbb{R}^n$ y otra capa densa de alineamiento mediante las que penar las diferencias.
+$$\mathcal{L}_{Align}^{(K)}(t,s) = \| X_t^{(i)} -X_s^{(j)}  \|_2$$
 
-  $$\mathcal{L}_{Align}^{(K)}(t,s) = \| X_t^{(i)} -X_s^{(j)}  \|_2$$
+La perdida final incorpora la suma de todas las perdidas de todas las etapas de  ALS.
 
-  La perdida final incorpora la suma de todas las perdidas de todas las etapas de  ALS.
+$$\mathcal{L}_{total}=\sum_{k=1}^n \mathcal{L}_{Align}^{(k)} + \mathcal{L}_{model}^{(p)} $$
 
-  $$\mathcal{L}_{total}=\sum_{k=1}^n \mathcal{L}_{Align}^{(k)} + \mathcal{L}_{model}^{(p)} $
-
-- La otra etapa, LSP consiste básicamente en seleccionar que capas de la la red tutora transferir usando el argumento minimo del grammiamo inter clases sumado al grammiano entre capas.
+La otra etapa, LSP consiste en seleccionar que capas de la la red tutora transferir usando el argumento minimo del grammiamo inter clases sumado al grammiano entre capas. El funcionamiento es ligeramente mejor a Fitnets.
 
 ### A Gift from Knowledge Distillation: Fast Optimization, Network Minimization and Transfer Learning
 
 Año: 2017
 
-tipo: layer level distillation
+Usan distiliacion para resolver tres tareas distintas pero complementarias; Optimizacion del entrenamiento de la red estudiante mediante inicializacion inteligente de los pesos, mejorar el performance en tiempo de la red estudiante dado su tamaño y mejorar el performace en accuracy dada la transferencia de conocimiento de la red.
 
-aplicacion
-
-abstract: We introduce a novel technique for knowledge transfer, where knowledge from a pretrained deep neural network (DNN) is distilled and transferred to another DNN. As the DNN maps from the input space to the output space through many layers sequentially, we define the distilled knowledge to be transferred in terms of flow between layers, which is calculated by computing the inner product between features from two layers. When we compare the student DNN and the original network with the same size as the student DNN but trained without a teacher network, the proposed method of transferring the distilled knowledge as the flow between two layers exhibits three important phenomena: (1) the student DNN that learns the distilled knowledge is optimized much faster than the original model; (2) the student DNN outper- forms the original DNN; and (3) the student DNNcan learn the distilled knowledge from a teacher DNN that is trained at a different task, and the student DNN outperforms the original DNN that is trained from scratch.
-
-- Usan distiliacion para resolver tres tareas distintas pero complementarias; Optimizacion del entrenamiento de la red estudiante mediante inicializacion inteligente de los pesos, mejorar el performance en tiempo de la red estudiante dado su tamaño y mejorar el performace en accuracy dada la transferencia de conocimiento de la red.
-- En vez de destilar directamente las features de la red tutora, centran su problema en la destilacion del flujo del procedimiento de resolución (FSP *Flow of Solution Procedure*) de la red tutora, definida como la relacion entre dos features intermedios. Matematicamente hablando, definen este FSP entre dos capas como la matriz Gramiana entre los features de ambas. En el caso de dos capas $1$ y $2$, un input $x$ y pesos $W$, este valor sería:
+En vez de destilar directamente las features de la red tutora, centran su problema en la destilacion del flujo del procedimiento de resolución (FSP *Flow of Solution Procedure*) de la red tutora, definida como la relacion entre dos features intermedios. Matematicamente hablando, definen este FSP entre dos capas como la matriz Gramiana entre los features de ambas. En el caso de dos capas $1$ y $2$, un input $x$ y pesos $W$, este valor sería:
 
 $$G_{i,j}(x,W)= \sum_{s=1}^h \sum_{t=1}^w\frac{ F^1_{s,t,i}(x,W)  F^2_{s,t,i}(x,W)}{h \times w}$$
 
-- Nótese que la formula se define para capas sin perdida dimensional, como es el caso de las capas en los bloques res-net. De tal forma la perdida se define como la distancia $L_2$ entre las FSPs de ambas redes, donde se deja libre un parametro $\lambda_i$ sobre las n posiciones de las matrices para poder ponderar entre redes. En el caso expuesto este lambda se deja libre.
+Nótese que la formula se define para capas sin perdida dimensional, como es el caso de las capas en los bloques res-net. De tal forma la perdida se define como la distancia $L_2$ entre las FSPs de ambas redes, donde se deja libre un parametro $\lambda_i$ sobre las n posiciones de las matrices para poder ponderar entre redes. En el caso expuesto este lambda se deja libre.
 
-  $$\mathcal{L}_{FSP} = \frac{1}{N} \sum_x \sum_{i=1}^n \lambda_i \left \| G_i^T(x;W_T)-G_i^S(x;W_S)  \right \|_2$$
+$$\mathcal{L}_{FSP} = \frac{1}{N} \sum_x \sum_{i=1}^n \lambda_i \left \| G_i^T(x;W_T)-G_i^S(x;W_S)  \right \|_2$$
 
-- Al momento del entrenamiento, el entrenamiento se divide en dos fases, inicializacion y entrenamiento sobre la tarea principal. La inicializacion se realiza seteando $W_S$ de tal forma que minimice $\mathcal{L}_{FSP}$ entre ambas redes, para seguidamente realizar un finetunning entrenando de manera regular contra los labels originales.
-- Funcionamiento regular, muy posiblemente por la manera de pos-entrenamiento (No hay destilacion al momento de destilar, solo en la inicializacion de los pesos).
+Al momento del entrenamiento, el entrenamiento se divide en dos fases, inicializacion y entrenamiento sobre la tarea principal. La inicializacion se realiza seteando $W_S$ de tal forma que minimice $\mathcal{L}_{FSP}$ entre ambas redes, para seguidamente realizar un finetunning entrenando de manera regular contra los labels originales.
+
+El funcionamiento ws regular, muy posiblemente por la manera de pos-entrenamiento (No hay entrenamiento al momento de destilar, solo en la inicializacion de los pesos).
 
 ## Transfer Learning
 
@@ -433,35 +395,36 @@ año: Marzo 2018
 
 keyword: Knowledge Transfer · feature level distillation, bayesian, 
 
-- Rather than hacer un matching directo entre los features como en casi todos los casos de layer level, hacen aproximan la distribución de probabilidades de la red estudiante a la red tutora.
+Rather than hacer un matching directo entre los features como en casi todos los casos de layer level, hacen aproximan la distribución de probabilidades de la red estudiante a la red tutora.
 
-- El uso de probabilidades permite realizar knowledge transfer usando
+El uso de probabilidades permite realizar knowledge transfer usando
 
-  - Cross-modal knowledge
-  - Features creados a mano (sift, etc)
-  - Transferir features usando tasks distintos al buscado
-  - Incorporar domain-knowledge
+- Cross-modal knowledge
+- Features creados a mano (sift, etc)
+- Transferir features usando tasks distintos al buscado
+- Incorporar domain-knowledge
 
-- Al ser difícil de obtener de manera directa la distribucion completa de las features de la red se minimiza una distribucion condicional. Esta se estima usando kernel density estimation. Tomando un kernel $K$, la distribucion condicional para la red tutora es:
+Al ser difícil de obtener de manera directa la distribucion completa de las features de la red se minimiza una distribucion condicional. Esta se estima usando kernel density estimation. Tomando un kernel $K$, la distribucion condicional para la red tutora es:
 
-  $$p^t_{i \mid j}= \frac{K( F_t^{i} F_t^j; 2\sigma_t^2)}{\sum^N_{k=1,k\neq j} K( F_t^{i} F_t^j; 2\sigma_t^2)} \in [0,1]$$ 
+$$p^t_{i \mid j}= \frac{K( F_t^{i} F_t^j; 2\sigma_t^2)}{\sum^N_{k=1,k\neq j} K( F_t^{i} F_t^j; 2\sigma_t^2)} \in [0,1]$$ 
 
-  La distribucion para la red estudiante es equivalente cambiando los features $F_s^{i} $ y la varianza $\sigma_s^2$. Como kernels se proponen el uso del kernel gaussiano y una mejora interesante, la distancia coseno $K=\frac{1}{2} \frac{a^{\top}b}{\|a\|_2\|b\|_2}+1\in [0]$.
+La distribucion para la red estudiante es equivalente cambiando los features $F_s^{i} $ y la varianza $\sigma_s^2$. Como kernels se proponen el uso del kernel gaussiano y una mejora interesante, la distancia coseno $K=\frac{1}{2} \frac{a^{\top}b}{\|a\|_2\|b\|_2}+1\in [0]$.
 
-- Ambas distribuciones se aproximan minimizando la divergencia Kullback-Leibler en su variante batch sobre muestras $D_{\mathrm{KL}}(P\|Q) = \sum_{i=1}^N \sum_{j=1, j\neq i}^N p(x) \ln \frac{p(x)}{q(x)} $, entrena usando adam en batches de 64 y 128.
+Ambas distribuciones se aproximan minimizando la divergencia Kullback-Leibler en su variante batch sobre muestras $D_{\mathrm{KL}}(P\|Q) = \sum_{i=1}^N \sum_{j=1, j\neq i}^N p(x) \ln \frac{p(x)}{q(x)} $, entrena usando adam en batches de 64 y 128.
 
-- Dicen algo mas dificil y interesante sobre mutual information C/R a la divergencia kullback leibler
+Dicen algo mas dificil y interesante sobre mutual information C/R a la divergencia kullback leibler
 
-- Funciona bien. todo:profundizar
+Funciona bien. todo:profundizar
 
 ### Dropout Distillation
 
 Año: 2016
 
-- La destilacion en este caso se centra en destilar una red bayesiana en la linea de lo expuesto por yarin gal en cite:gal2015; el uso de dropout al momento de realizar la inferencia sobre una red entrenada usando esa tecnica permite realizar sampleos sobre la version probabilistica de la red. De tal forma, usando una cantidad fija de sampleos se pueden estimar la media y varianza para regresion o la moda y algun otro estimador de dispersion para clasificación como medidas de la esperanza de la red original. Lo bueno es que esto mejora la inferencia y permite medir incerteza, lo malo es que requiere de una cantidad mayor de sampleos por inferencia (normalmente 10).
-- El paper se centra en la destilacion de la esperanza de la red bayesiana para poder realizar inferencia en tiempo real usando la esperanza en vez de estimar sobre una cantidad mayor de sampleos de la inferencia.
-- En su forma mas basica, esta tarea consiste en encontrar pesos de la red bayesiana $\hat{W}$ tal que el error de la inferencia sea el minimo. Esto se hace entrenando una red de la misma estructura de la red original usando divergencia KL entre ambas redes. todo:duda_entre_que?
-- De la misma forma se puede hechar mano a la destilacion clasica expuesta por hinton para transferir el conocimiento de una red bayesiana a una red estudiante de menor tamaño.
+La destilacion en este caso se centra en destilar una red bayesiana en la linea de lo expuesto por yarin gal en cite:gal2015; el uso de dropout al momento de realizar la inferencia sobre una red entrenada usando esa tecnica permite realizar sampleos sobre la version probabilistica de la red. De tal forma, usando una cantidad fija de sampleos se pueden estimar la media y varianza para regresion o la moda y algun otro estimador de dispersion para clasificación como medidas de la esperanza de la red original. Lo bueno es que esto mejora la inferencia y permite medir incerteza, lo malo es que requiere de una cantidad mayor de sampleos por inferencia (normalmente 10).
+
+El paper se centra en la destilacion de la esperanza de la red bayesiana para poder realizar inferencia en tiempo real usando la esperanza en vez de estimar sobre una cantidad mayor de sampleos de la inferencia.
+
+En su forma mas basica, esta tarea consiste en encontrar pesos de la red bayesiana $\hat{W}$ tal que el error de la inferencia sea el minimo. Esto se hace entrenando una red de la misma estructura de la red original usando divergencia KL entre ambas redes sobre la ultima capa. Esto en general permite mejorar la presicion de la red con respecto a la interpretación determinista de ensamble de redes, perdiendo de todas maneras el desempeño ante la interpretacion probabilista original.
 
 ### Zero-shot Knowledge Transfer via Adversarial Belief Matching
 
